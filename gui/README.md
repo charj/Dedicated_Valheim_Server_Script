@@ -6,6 +6,8 @@ Launch in the web browser
 
 ENjoy....
 
+Future pulls for GUI will come from a seperate repo but until we have it all ironed out... it will be combined. 
+
 TO-DO! -Work Player edit for ban,admin...etc
 
 -Work Valheim+ information (if using)
