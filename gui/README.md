@@ -8,19 +8,37 @@ ENjoy....
 
 Future pulls for GUI will come from a seperate repo but until we have it all ironed out... it will be combined. 
 
-TO-DO! -Work Player edit for ban,admin...etc
+TO-DO!
 
--Work Valheim+ information (if using)
+Work server functions
+--outline completed - working 100% with correct sudoers entry - might be a better way
 
--Work Bepindex install, remove, display mods (if using)
+Work player controls edit for ban,admin,block 
+-outline completed - kinda working
 
-Add whatever we think needs to be added to make it awesome and user friendly
+Work Valheim+ information (if using)
+
+Work Bepindex install, remove, display mods (if using)
+-outline completed - not working 100%
+
+Work display logs
+-outline complete - Working only with www-data being added to adm group.  adm group has permissions to read all logs. 
+-- has to be a way to have sudoers file execute better without exposing the server to exploits
+-- maybe edit start_valheim.sh and dump valheim logs to /home/steam/valheimserver/worldName/logs 
+
+Work map generation for seed
+-outline complete - 100% working
+
+Work notification area
+-outline complete - 100% working... maybe add different news related sections?
+
+
 
 # Is this be best way to secure it?? NO its a huge security punching bag... but we need to do something
 # Valheim www-data entry for sudoers
 
 
-secuuuure da php?
+Make sure php functions are secured to the best it can be.  Review GTFOBINS for common shell hacks and test.
 
 escapeshellcmd(string $command): string
 
