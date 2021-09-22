@@ -158,7 +158,7 @@ echo "1"
 #####################Install Valheim Server START#######################
 ########################################################################
 function valheim_server_steam_account_creation() {
-	# create steam account
+	# create local steam account used for the operations of steamcmd and Valheim
 	# later add top variable for steam user because maybe somebody already has a steam account for something else?
 	echo "$START_INSTALL_1_PARA"
 	while true; 
@@ -188,7 +188,7 @@ function valheim_server_steam_account_creation() {
 				useradd --create-home --shell /bin/bash --password $userpassword steam
 				cp /etc/skel/.bashrc /home/steam/.bashrc
 				cp /etc/skel/.profile /home/steam/.profile
-            elif command -v yum >/dev/null; then
+                        elif command -v yum >/dev/null; then
 				useradd -mU -s /bin/bash -p $userpassword steam
 				# All file from /etc/skel/ are auto copied on RH.
 			else
@@ -264,7 +264,7 @@ function valheim_server_public_valheim_port() {
 		echo ""
 			while true; do
 				read -p "$FUNCTION_VALHEIM_SERVER_INSTALL_LD_SETPORTNEW_ENTER" portnumber
-				### write check if new port is = used ports => try again, error
+				### LATER write check if new port is = used ports => try again, error
 				# Add this function check later
 				#usedport="$(perl -n -e '/\-port "?([^"]+)"? \-nographics/ && print "$1\n"' start_valheim_${worldname}.sh)"
 				[[ ${#portnumber} -ge 4 && ${#portnumber} -le 6 ]] && [[ $portnumber -gt 1024 && $portnumber -le 65530 ]] && [[ "$portnumber" =~ ^[[:alnum:]]+$ ]] & break
@@ -803,18 +803,18 @@ function backup_world_data() {
     tput setaf 1; echo "$BACKUP_WORLD_INFO_CONFIRM" ; tput setaf 9;
         read -p "$BACKUP_WORLD_INPUT_CONFIRM_Y_N" confirmBackup
     #if y, then continue, else cancel
-    if [ "$confirmBackup" == "y" ]; then
+   if [ "$confirmBackup" == "y" ]; then
 		## Get the current date as variable.
         TODAY="$(date +%Y-%m-%d-%T)"
-		tput setaf 5; echo "$BACKUP_WORLD_CHECK_DIRECTORY" ; tput setaf 9;
-		tput setaf 5; echo "$BACKUP_WORLD_CHECK_DIRECTORY_1" ; tput setaf 9;
-		dldir=$backupPath/$worldname
-		[ ! -d "$dldir" ] && mkdir -p "$dldir"
+	tput setaf 5; echo "$BACKUP_WORLD_CHECK_DIRECTORY" ; tput setaf 9;
+	tput setaf 5; echo "$BACKUP_WORLD_CHECK_DIRECTORY_1" ; tput setaf 9;
+	dldir=$backupPath/$worldname
+	[ ! -d "$dldir" ] && mkdir -p "$dldir"
         sleep 1
         ## Clean up files older than 2 weeks. Create a new backup.
-		tput setaf 1; echo "$BACKUP_WORLD_CONDUCT_CLEANING" ; tput setaf 9;
+	tput setaf 1; echo "$BACKUP_WORLD_CONDUCT_CLEANING" ; tput setaf 9;
         find $backupPath/$worldname/* -mtime +14 -type f -delete
-		tput setaf 2; echo "$BACKUP_WORLD_CONDUCT_CLEANING_LOKI" ; tput setaf 9;
+	tput setaf 2; echo "$BACKUP_WORLD_CONDUCT_CLEANING_LOKI" ; tput setaf 9;
         sleep 1
         ## Tar Section. Create a backup file, with the current date in its name.
         ## Add -h to convert the symbolic links into a regular files.
@@ -824,25 +824,25 @@ function backup_world_data() {
         tput setaf 1; echo "$BACKUP_WORLD_STOPPING_SERVICES" ; tput setaf 9;
         systemctl stop valheimserver_${worldname}.service
         tput setaf 1; echo "$BACKUP_WORLD_STOP_INFO" ; tput setaf 9;
-		tput setaf 2; echo "$BACKUP_WORLD_STOP_INFO_1" ; tput setaf 9;
-		tput setaf 2; echo "$BACKUP_WORLD_STOP_WAIT_10_SEC" ; tput setaf 9;
+	tput setaf 2; echo "$BACKUP_WORLD_STOP_INFO_1" ; tput setaf 9;
+	tput setaf 2; echo "$BACKUP_WORLD_STOP_WAIT_10_SEC" ; tput setaf 9;
         #give it a few
         sleep 10
-		tput setaf 1; echo "$BACKUP_WORLD_MAKING_TAR" ; tput setaf 9;
+	tput setaf 1; echo "$BACKUP_WORLD_MAKING_TAR" ; tput setaf 9;
         tar czf $backupPath/$worldname/valheim-backup-$TODAY.tgz $worldpath/$worldname/*
-		tput setaf 2; echo "$BACKUP_WORLD_MAKING_TAR_COMPLETE" ; tput setaf 9;
-		sleep 1
-		tput setaf 2; echo "$BACKUP_WORLD_RESTARTING_SERVICES" ; tput setaf 9;
+	tput setaf 2; echo "$BACKUP_WORLD_MAKING_TAR_COMPLETE" ; tput setaf 9;
+	sleep 1
+	tput setaf 2; echo "$BACKUP_WORLD_RESTARTING_SERVICES" ; tput setaf 9;
         systemctl start valheimserver_${worldname}.service
         tput setaf 2; echo "$BACKUP_WORLD_RESTARTING_SERVICES_1" ; tput setaf 9;
-		echo ""
-		tput setaf 2; echo "$BACKUP_WORLD_SET_PERMS_FILES" ; tput setaf 9;
-		chown -Rf steam:steam ${backupPath}/${worldname}
-		tput setaf 2; echo "$BACKUP_WORLD_PROCESS_COMPLETE" ; tput setaf 9;
-		echo ""
-	else 
-		tput setaf 3; echo "$BACKUP_WORLD_PROCESS_CANCELED" ; tput setaf 9;
-	fi
+	echo ""
+	tput setaf 2; echo "$BACKUP_WORLD_SET_PERMS_FILES" ; tput setaf 9;
+	chown -Rf steam:steam ${backupPath}/${worldname}
+	tput setaf 2; echo "$BACKUP_WORLD_PROCESS_COMPLETE" ; tput setaf 9;
+	echo ""
+  else 
+	tput setaf 3; echo "$BACKUP_WORLD_PROCESS_CANCELED" ; tput setaf 9;
+  fi
 }
 
 # Restore World Files DB and FWL
@@ -879,29 +879,29 @@ $(ColorOrange ' '"$RESTORE_WORLD_DATA_VALIDATE_DATA_WITH_CONFIG"' '${valheimInst
 $(ColorOrange ' '"$RESTORE_WORLD_DATA_INFO"' ')
 $(ColorGreen ' '"$RESTORE_WORLD_DATA_CONFIRM_1"' ') "
 	#read user input confirmation
-		read -p "" confirmBackupRestore
+	read -p "" confirmBackupRestore
 	#if y, then continue, else cancel
     if [ "$confirmBackupRestore" == "y" ]; then
-		#stop valheim server
+	#stop valheim server
         tput setaf 1; echo "$RESTORE_WORLD_DATA_STOP_VALHEIM_SERVICE" ; tput setaf 9;
         systemctl stop valheimserver_${worldname}.service
         tput setaf 2; echo "$RESTORE_WORLD_DATA_STOP_VALHEIM_SERVICE_1" ; tput setaf 9;
-		#give it a few
+	#give it a few
         sleep 5
-		#copy backup to worlds folder
+	#copy backup to worlds folder
         tput setaf 2; echo "$RESTORE_WORLD_DATA_COPYING ${backups[$selectedIndex-1]} to ${worldpath}/${worldname}/" ; tput setaf 9;
         cp ${backups[$selectedIndex-1]} ${worldpath}/${worldname}/
-		#untar
+	#untar
         tput setaf 2; echo "$RESTORE_WORLD_DATA_UNPACKING ${worldpath}/${restorefile}" ; tput setaf 9;
         tar xzf ${worldpath}/${worldname}/${restorefile} --strip-components=7 --directory ${worldpath}/${worldname}/  
-		chown -Rf steam:steam ${worldpath}/${worldname}/
-		rm  ${worldpath}/${worldname}/*.tgz
+	chown -Rf steam:steam ${worldpath}/${worldname}/
+	rm  ${worldpath}/${worldname}/*.tgz
         tput setaf 2; echo "$RESTORE_WORLD_DATA_STARTING_VALHEIM_SERVICES" ; tput setaf 9;
         tput setaf 2; echo "$RESTORE_WORLD_DATA_CUSS_LOKI" ; tput setaf 9;
         systemctl start valheimserver_${worldname}.service
-	else
-		tput setaf 2; echo "$RESTORE_WORLD_DATA_CANCEL_CUSS_LOKI" ; tput setaf 9;
-	fi
+  else
+	tput setaf 2; echo "$RESTORE_WORLD_DATA_CANCEL_CUSS_LOKI" ; tput setaf 9;
+  fi
 }
 
 ########################################################################
@@ -928,14 +928,14 @@ function continue_with_valheim_update_install() {
     clear
     echo ""
     echo -ne "
-$(ColorOrange ''"$FUNCTION_INSTALL_VALHEIM_UPDATES"'')
-$(ColorRed ''"$DRAW60"'')"
+    $(ColorOrange ''"$FUNCTION_INSTALL_VALHEIM_UPDATES"'')
+    $(ColorRed ''"$DRAW60"'')"
 	echo ""
 	tput setaf 2; echo "$FUNCTION_INSTALL_VALHEIM_FOUND" ; tput setaf 9;
 	tput setaf 2; echo "$FUNCTION_INSTALL_VALHEIM_UPDATE_INFO" ; tput setaf 9; 
 	tput setaf 2; echo "$FUNCTION_INSTALL_VALHEIM_UPDATE_CONFIRM" ; tput setaf 9; 
 	echo -ne "
-$(ColorRed ''"$DRAW60"'')"
+    $(ColorRed ''"$DRAW60"'')"
 	echo ""
 	read -p "$PLEASE_CONFIRM" confirmOfficialUpdates
 	#if y, then continue, else cancel
