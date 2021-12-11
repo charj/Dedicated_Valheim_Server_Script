@@ -10,9 +10,38 @@
 #### If you need anything, please visit our Discord Server: https://discord.gg/ejgQUfc
 #### *** GLHF - V/r, Zerobandwidth and Team
 ####
+###############################################################################################
+####
+#### File name: ldadvmenu.sh
+####
+###############################################################################################
+####
+#### Modifier: Lord/Ranger(Dumoss)
+#### Forked from: Njord advancemenu.ld (beta) Updated: 29-APR-2021
+####
+#### I would like to thank "Dr." Zerobandwidth "Frankenstein"
+#### and the development team of "Igor's" for putting 
+#### this wonderfull "monster" script together. :)
+####
+#### The main focus of this was to add Linux support for 
+#### Fedora-Cento-RHEL-OEL-yum/dnf based systems.
+#### 
+#### To allow control multiple Valheim servers running on a single node
+#### based on WORLDNAME and is installed under "${worldpath}/${worldname}"
+####
+#### TO have some simple firewall security control related to these systems. - (WIP)
+####
+#### *** - Dumoss
+####
+###############################################################################################
+###############################################################################################
+#### Current Options: DE=German, EN=English, FR=French, SP=Spanish"
+###############################################################################################
+###############################################################################################
 # All linux systems should have this 
 # If not .. <> install os-release
 source /etc/os-release
+
 
 if [ "$1" == "" ] 
 then 
@@ -67,8 +96,29 @@ debugmsg="n"
 # if [ "$debugmsg" == "y" ] ; then echo "something" ; fi
 ###############################################################
 # Set Menu Version for menu display
-mversion="3.5.1-Lofns-Vision"
+mversion="3.0.0-Lofns-Love"
 ldversion="0.4.051120211500ET.dev"
+###      -- Use are your own risk -- 
+### dev   -- Still working on firewall code. 
+###       -- Currently adding ufw commands. 
+###       -- And then finish the firewall menu (make pro).
+### alpha -- Dev team review.
+### beta  -- Public Testing.
+###
+### Please note that this is a play ground file for me and 
+### allows Zerobandwidth do determine what to pull into the main advance(menu).sh file.
+### 
+### I have done a lot ( and still ) testing of this new code 
+### and it seams to be working as original intended, but
+### now for OEL/REL/Fedora and centos tested.
+###
+### If you are using the above server versions of Linux and the added repos cause issues,
+### I have provided the 3 most causes and fixes in the function ***linux_server_update*** text.
+###
+### I am still in design mode for the firewall stuff.
+### Current it works 99% for FireWallD only at this time.
+###
+### Other Linux flavors and firewall systems to be added.
 ########################################################################
 #############################Set COLOR VARS#############################
 ########################################################################
@@ -265,7 +315,6 @@ function valheim_server_public_valheim_port() {
 			while true; do
 				read -p "$FUNCTION_VALHEIM_SERVER_INSTALL_LD_SETPORTNEW_ENTER" portnumber
 				### write check if new port is = used ports => try again, error
-				# Add this function check later
 				#usedport="$(perl -n -e '/\-port "?([^"]+)"? \-nographics/ && print "$1\n"' start_valheim_${worldname}.sh)"
 				[[ ${#portnumber} -ge 4 && ${#portnumber} -le 6 ]] && [[ $portnumber -gt 1024 && $portnumber -le 65530 ]] && [[ "$portnumber" =~ ^[[:alnum:]]+$ ]] & break
 			done	 
@@ -352,7 +401,7 @@ function valheim_server_install() {
     echo ""
 		if [ "$newinstall" == "y" ]; then
 			tput setaf 2; echo "Thank you for using the Njord Menu system." ; tput setaf 9; 
-			tput setaf 2; echo "This appears to be the frist time the menu has" ; tput setaf 9; 
+			tput setaf 2; echo "This appears to be the first time the menu has" ; tput setaf 9; 
 			tput setaf 2; echo "been run on this system." ; tput setaf 9; 
 			tput setaf 2; echo "Installing the first Valheim server started." ; tput setaf 9; 
 			linux_server_update
@@ -434,7 +483,7 @@ export SteamAppId=892970
 # Tip: Make a local copy of this script to avoid it being overwritten by steam.
 # NOTE: Minimum password length is 5 characters & Password cant be in the server name.
 # NOTE: You need to make sure the ports 2456-2458 is being forwarded to your server through your local router & firewall.
-./valheim_server.x86_64 -name "${displayname}" -port "${portnumber}" -nographics -batchmode -world "${worldname}" -password "${password}" -public "${publicList}" -savedir "${worldpath}/${worldname}"
+./valheim_server.x86_64 -name "${displayname}" -port "${portnumber}" -nographics -batchmode -world "${worldname}" -password "${password}" -public "${publicList}" -savedir "${worldpath}/${worldname}" -logfile "${worldpath}/${worldname}/valheim_server.log"
 export LD_LIBRARY_PATH=\$templdpath
 EOF
 		tput setaf 2; echo "$ECHO_DONE" ; tput setaf 9;
@@ -553,7 +602,7 @@ function linux_server_update() {
 	# Nimdy: check for updates and upgrade the system auto yes 
 	#        WTF is curl not installed by default... come on man!
     tput setaf 1; echo "$INSTALL_ADDITIONAL_FILES" ; tput setaf 9;
-    if command -v apt >/dev/null; then
+    if command -v apt-get >/dev/null; then
         sudo apt install lib32gcc1 libsdl2-2.0-0 libsdl2-2.0-0:i386 git mlocate net-tools unzip curl isof -y
     #elif command -v dnf >/dev/null; then
 	# Seams RH went to dnf as well in RHEL8
@@ -1679,7 +1728,8 @@ function get_current_config() {
     currentPort=$(perl -n -e '/\-port "?([^"]+)"? \-nographics/ && print "$1\n"' ${valheimInstallPath}/${worldname}/start_valheim_${worldname}.sh)
     currentPassword=$(perl -n -e '/\-password "?([^"]+)"? \-public/ && print "$1\n"' ${valheimInstallPath}/${worldname}/start_valheim_${worldname}.sh)
     currentPublicSet=$(perl -n -e '/\-public "?([^"]+)"? \-savedir/ && print "$1\n"' ${valheimInstallPath}/${worldname}/start_valheim_${worldname}.sh)
-    currentSaveDir=$(perl -n -e '/\-savedir "?([^"]+)"?$/ && print "$1\n"' ${valheimInstallPath}/${worldname}/start_valheim_${worldname}.sh)
+	currentSaveDir=$(perl -n -e '/\-savedir "?([^"]+)"? \-logfile/ && print "$1\n"' ${valheimInstallPath}/${worldname}/start_valheim_${worldname}.sh)
+    currentLogfileDir=$(perl -n -e '/\-logfile "?([^"]+)"?$/ && print "$1\n"' ${valheimInstallPath}/${worldname}/start_valheim_${worldname}.sh)
 
 }
 
@@ -1703,6 +1753,7 @@ function set_config_defaults() {
     setCurrentPassword=$currentPassword
     setCurrentPublicSet=$currentPublicSet
     setCurrentSaveDir=$currentSaveDir
+	setCurrentLogfileDir=$currentLogfileDir
 }
 function write_config_and_restart() {
     tput setaf 1; echo "$FUNCTION_WRITE_CONFIG_RESTART_INFO" ; tput setaf 9;
@@ -1715,7 +1766,7 @@ export SteamAppId=892970
 # Tip: Make a local copy of this script to avoid it being overwritten by steam.
 # NOTE: You need to make sure the ports 2456-2458 is being forwarded to your server through your local router & firewall.
 
-./valheim_server.x86_64 -name "${setCurrentDisplayName}" -port ${setCurrentPort} -nographics -batchmode -world "${currentWorldName}" -password "${setCurrentPassword}" -public "${setCurrentPublicSet}" -savedir "${worldpath}/${worldname}"
+./valheim_server.x86_64 -name "${setCurrentDisplayName}" -port ${setCurrentPort} -nographics -batchmode -world "${currentWorldName}" -password "${setCurrentPassword}" -public "${setCurrentPublicSet}" -savedir "${worldpath}/${worldname}" -logfile "${setCurrentLogfileDir}" -logappend -logflush 
 export LD_LIBRARY_PATH=\$templdpath
 EOF
    echo "$FUNCTION_WRITE_CONFIG_RESTART_SET_PERMS" ${valheimInstallPath}/${worldname}/start_valheim_${worldname}.sh
@@ -2144,7 +2195,8 @@ server_password="$(perl -n -e '/\-password "?([^"]+)"? \-public/ && print "$1\n"
 server_port="$(perl -n -e '/\-port "?([^"]+)"? \-nographics/ && print "$1\n"' start_valheim_${worldname}.sh)"
 server_world="$(perl -n -e '/\-world "?([^"]+)"? \-password/ && print "$1\n"' start_valheim_${worldname}.sh)"
 server_public="$(perl -n -e '/\-public "?([^"]+)"? \-savedir/  && print "$1\n"' start_valheim_${worldname}.sh)"
-server_savedir="$(perl -n -e '/\-savedir "?([^"]+)"?$/ && print "$1\n"' start_valheim_${worldname}.sh)"
+server_savedir=$(perl -n -e '/\-savedir "?([^"]+)"? \-logfile/ && print "$1\n"' start_valheim_${worldname}.sh)
+server_logfiledir=$(perl -n -e '/\-logfile "?([^"]+)"?$/ && print "$1\n"' start_valheim_${worldname}.sh)
 
 
 # The rest is automatically handled by BepInEx for Valheim+
@@ -2250,7 +2302,7 @@ do
 	esac
 done
 
-"${VALHEIM_PLUS_PATH}/${executable_name}" -name "${server_name}" -password "${server_password}" -port "${server_port}" -world "${server_world}" -public "${server_public}" -savedir "${server_savedir}"
+"${VALHEIM_PLUS_PATH}/${executable_name}" -name "${server_name}" -password "${server_password}" -port "${server_port}" -world "${server_world}" -public "${server_public}" -savedir "${server_savedir}" -logfile "${server_logfiledir}" -logappend -logflush
 
 export LD_LIBRARY_PATH=$templdpath
 EOF
@@ -2522,7 +2574,8 @@ server_password="$(perl -n -e '/\-password "?([^"]+)"? \-public/ && print "$1\n"
 server_port="$(perl -n -e '/\-port "?([^"]+)"? \-nographics/ && print "$1\n"' start_valheim_${worldname}.sh)"
 server_world="$(perl -n -e '/\-world "?([^"]+)"? \-password/ && print "$1\n"' start_valheim_${worldname}.sh)"
 server_public="$(perl -n -e '/\-public "?([^"]+)"? \-savedir/  && print "$1\n"' start_valheim_${worldname}.sh)"
-server_savedir="$(perl -n -e '/\-savedir "?([^"]+)"?$/ && print "$1\n"' start_valheim_${worldname}.sh)"
+server_savedir=$(perl -n -e '/\-savedir "?([^"]+)"? \-logfile/ && print "$1\n"' start_valheim_${worldname}.sh)
+server_logfiledir=$(perl -n -e '/\-logfile "?([^"]+)"?$/ && print "$1\n"' start_valheim_${worldname}.sh)
 
 # The rest is automatically handled by BepInEx
 
@@ -2549,7 +2602,7 @@ echo "Starting server PRESS CTRL-C to exit"
 # Tip: Make a local copy of this script to avoid it being overwritten by steam.
 # NOTE: Minimum password length is 5 characters & Password cant be in the server name.
 # NOTE: You need to make sure the ports 2456-2458 is being forwarded to your server through your local router & firewall.
-exec "${VALHEIM_BEP_PATH}/valheim_server.x86_64" -name "${server_name}" -password "${server_password}" -port "${server_port}" -world "${server_world}" -public "${server_public}" -savedir "${server_savedir}"
+exec "${VALHEIM_BEP_PATH}/valheim_server.x86_64" -name "${server_name}" -password "${server_password}" -port "${server_port}" -world "${server_world}" -public "${server_public}" -savedir "${server_savedir}" -logfile "${server_logfiledir}"
 EOF
 }
 
@@ -2672,7 +2725,7 @@ export LD_LIBRARY_PATH=./linux64:\$LD_LIBRARY_PATH
 export SteamAppId=892970
 # Tip: Make a local copy of this script to avoid it being overwritten by steam.
 # NOTE: You need to make sure the ports 2456-2458 is being forwarded to your server through your local router & firewall.
-./valheim_server.x86_64 -name "${currentDisplayName}" -port "${currentPort}" -nographics -batchmode -world "${currentWorldName}" -password "${currentPassword}" -public "${currentPublicSet}" -savedir "${worldpath}/${worldname}"
+./valheim_server.x86_64 -name "${currentDisplayName}" -port "${currentPort}" -nographics -batchmode -world "${currentWorldName}" -password "${currentPassword}" -public "${currentPublicSet}" -savedir "${worldpath}/${worldname}" -logfile "${valheimInstallPath}/${worldname}/valheim_server.log" -logappend -logflush
 export LD_LIBRARY_PATH=\$templdpath
 EOF
 		echo "Rebuilding New Valheim startup script complete"
@@ -2730,7 +2783,6 @@ EOF
 ################### INSTALL GUI FROM NJORD MENU ########################
 ########################################################################
 function build_njord_menu_gui() {
-
 #download required packages php and apache2 
 echo "downloading files for apache and php"
 sudo apt install php libapache2-mod-php php-xml -y
@@ -2784,7 +2836,7 @@ echo "done"
 
 
 ########################################################################
-#################### MENUS STATUS VARIBLES START #######################
+########################MENUS STATUS VARIBLES START ####################
 ########################################################################
 
 # Check Current Valheim REPO Build for menu display
@@ -2821,7 +2873,7 @@ localValheimAppmanifest=${valheimInstallPath}/${worldname}/steamapps/appmanifest
 }
 
 function check_menu_script_repo() {
-latestScript=$(curl --connect-timeout 10 -s https://api.github.com/repos/Nimdy/Dedicated_Valheim_Server_Script/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+latestScript=$(curl --connect-timeout 5 -s https://api.github.com/repos/Nimdy/Dedicated_Valheim_Server_Script/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 echo $latestScript
 }
 
@@ -3251,8 +3303,6 @@ $(ColorOrange ''"$DRAW60"'')
 $(ColorOrange '-')$(ColorGreen ' 99)') " $FUNCTION_MAIN_MENU_LD_CHANGE_SESSION_CURRENT_WORLD
 [ -f "$worldfilelist" ] || echo -ne "
 $(ColorOrange '-')$(ColorGreen ' 0000)') " Upgrade Old Menu to New Njord Menu
-[ ! -f "$worldfilelist" ] || echo -ne "
-$(ColorOrange '-')$(ColorGreen ' 1337)') " Install Njord Menu Web GUI
 echo -ne "
 $(ColorOrange ''"$DRAW60"'')
 $(ColorGreen ' 0)') $FUNCTION_MAIN_MENU_EDIT_VALHEIM_EXIT
@@ -3282,7 +3332,6 @@ $(ColorPurple ''"$CHOOSE_MENU_OPTION"'') "
 			20) bepinex_menu ; bepinex_menu ;;			
 			99) request99="y" ; set_world_server ; menu ;;
 			0000) get_current_config_upgrade_menu ; menu ;;
-			1337) build_njord_menu_gui ; menu ;;
 			0) exit 0 ;;
 			*)  echo -ne " $(ColorRed 'Wrong option.')" ; menu ;;
         esac
